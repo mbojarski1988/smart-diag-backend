@@ -82,11 +82,11 @@ final readonly class UserWriteRequest
      */
     private static function validate(array $data, bool $isPatch = false): self|string
     {
-        $email     = trim((string) ($data['email'] ?? ''));
-        $firstName = trim((string) ($data['firstName'] ?? ''));
-        $lastName  = trim((string) ($data['lastName'] ?? ''));
-        $role      = trim((string) ($data['role'] ?? ''));
-        $password  = (string) ($data['password'] ?? '');
+        $email     = trim(self::str($data['email'] ?? ''));
+        $firstName = trim(self::str($data['firstName'] ?? ''));
+        $lastName  = trim(self::str($data['lastName'] ?? ''));
+        $role      = trim(self::str($data['role'] ?? ''));
+        $password  = self::str($data['password'] ?? '');
         $active    = isset($data['active']) ? (bool) $data['active'] : null;
 
         if ($email === '') {
@@ -110,5 +110,10 @@ final readonly class UserWriteRequest
         }
 
         return new self($email, $firstName, $lastName, $role, $password, $active);
+    }
+
+    private static function str(mixed $value): string
+    {
+        return is_string($value) ? $value : (string) $value; // @phpstan-ignore cast.string
     }
 }
