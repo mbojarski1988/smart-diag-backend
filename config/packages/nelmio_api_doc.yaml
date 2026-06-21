@@ -1,0 +1,217 @@
+nelmio_api_doc:
+  documentation:
+    info:
+      title: Smart Diag Backend API
+      description: API for AI-powered diagnostics of Ford vehicles — VIN decoding, fault code analysis, and intelligent repair guidance.
+      version: 1.0.0
+    tags:
+      - name: Client services
+        description: Endpoints used by API clients.
+      - name: License administration
+        description: Endpoints used to manage client licenses.
+    components:
+      securitySchemes:
+        LicenseKey:
+          type: apiKey
+          in: header
+          name: X-License-Key
+        AdminKey:
+          type: apiKey
+          in: header
+          name: X-Admin-Key
+      schemas:
+        ErrorResponse:
+          type: object
+          required: [error]
+          properties:
+            error:
+              type: string
+              example: missing_license
+        LicenseWrite:
+          type: object
+          required: [clientName, clientEmail, validUntil]
+          properties:
+            clientName:
+              type: string
+              example: ACME Inc.
+            clientEmail:
+              type: string
+              format: email
+              example: admin@example.com
+            note:
+              type: string
+              nullable: true
+              example: Annual license
+            validUntil:
+              type: string
+              format: date-time
+              example: '2027-06-21T23:59:59+00:00'
+        LicensePatch:
+          allOf:
+            - $ref: '#/components/schemas/LicenseWrite'
+            - type: object
+              properties:
+                active:
+                  type: boolean
+                  example: true
+        License:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            clientName:
+              type: string
+              example: ACME Inc.
+            clientEmail:
+              type: string
+              example: admin@example.com
+            note:
+              type: string
+              nullable: true
+            active:
+              type: boolean
+              example: true
+            validUntil:
+              type: string
+              format: date-time
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+            deactivatedAt:
+              type: string
+              format: date-time
+              nullable: true
+            deletedAt:
+              type: string
+              format: date-time
+              nullable: true
+        LicenseWithKey:
+          allOf:
+            - $ref: '#/components/schemas/License'
+            - type: object
+              properties:
+                licenseKey:
+                  type: string
+                  example: lic_0123456789abcdef
+        VinCheckDigitResponse:
+          type: object
+          required: [valid, actual, expected]
+          properties:
+            valid:
+              type: boolean
+              description: >-
+                True when the VIN is valid. For EU VINs, expected is null
+                because check digit validation is not applicable.
+              example: true
+            actual:
+              type: string
+              nullable: true
+              example: '0'
+            expected:
+              type: string
+              nullable: true
+              example: '0'
+        VinDecodeResponse:
+          type: object
+          required:
+            - vin
+            - valid
+            - ford
+            - wmi
+            - manufacturer
+            - modelYear
+            - plantCode
+            - serialNumber
+            - region
+            - model
+            - bodyStyle
+            - engineCode
+            - assemblyPlant
+            - productionYear
+            - productionMonth
+            - errorMessage
+            - checkDigit
+            - warnings
+            - external
+          properties:
+            vin:
+              type: string
+              example: 1FA6P8CF0F5300000
+            valid:
+              type: boolean
+              example: true
+            ford:
+              type: boolean
+              example: true
+            wmi:
+              type: string
+              nullable: true
+              example: 1FA
+            manufacturer:
+              type: string
+              nullable: true
+              example: Ford Motor Company USA
+            modelYear:
+              type: integer
+              nullable: true
+              example: 2015
+            plantCode:
+              type: string
+              nullable: true
+              example: '5'
+            serialNumber:
+              type: string
+              nullable: true
+              example: '300000'
+            region:
+              type: string
+              nullable: true
+              example: North America
+            model:
+              type: string
+              nullable: true
+              example: 'Series/Line: P8C'
+            bodyStyle:
+              type: string
+              nullable: true
+              example: Encoded in the model series
+            engineCode:
+              type: string
+              nullable: true
+              example: 5.0L V8 (Coyote)
+            assemblyPlant:
+              type: string
+              nullable: true
+              example: Flat Rock, MI (Mustang)
+            productionYear:
+              type: integer
+              nullable: true
+              example: 2015
+            productionMonth:
+              type: string
+              nullable: true
+              example: null
+            errorMessage:
+              type: string
+              nullable: true
+              example: null
+            checkDigit:
+              $ref: '#/components/schemas/VinCheckDigitResponse'
+            warnings:
+              type: array
+              items:
+                type: string
+              example: []
+            external:
+              type: object
+              additionalProperties: true
+              example: []
+  areas:
+    default:
+      path_patterns:
+        - ^/api
+        - ^/health

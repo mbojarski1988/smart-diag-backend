@@ -1,0 +1,46 @@
+# Dependencies
+/vendor/
+
+# Environment
+.env.local
+.env.*.local
+
+# Symfony cache & logs
+/var/
+
+# PHPUnit
+/.phpunit.result.cache
+/phpunit.xml
+
+# PHPStan cache
+/.phpstan-cache/
+
+# Composer
+/composer.lock
+
+# IDE
+/.idea/
+/.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# AI tools
+/.claude/
+/.codex/
+/.agents/
+/.cursor/
+/.aider*
+/.continue/
+/.codeium/
+/.copilot/
+/.qodo/
+/.supermaven/
+CLAUDE.md
+AGENTS.md
+GEMINI.md
+COPILOT.md
+.cursorrules
+.cursorignore

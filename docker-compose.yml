@@ -1,0 +1,51 @@
+name: smart-diag-backend
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: smart-diag-backend
+    ports:
+      - "8000:8000"
+    environment:
+      APP_ENV: dev
+      APP_SECRET: docker-dev-secret
+      ADMIN_API_KEY: docker-admin-secret
+      DATABASE_URL: postgresql://vin:vin@db:5432/vin?serverVersion=16&charset=utf8
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - .:/app
+      - app_vendor:/app/vendor
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: vin
+      POSTGRES_USER: vin
+      POSTGRES_PASSWORD: vin
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+  redis-browser:
+    image: rediscommander/redis-commander:latest
+    environment:
+      REDIS_HOSTS: local:redis:6379
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
+
+volumes:
+  app_vendor:
+  postgres_data:
+  redis_data:

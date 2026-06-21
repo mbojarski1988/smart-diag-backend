@@ -1,0 +1,11 @@
+framework:
+  secret: '%env(APP_SECRET)%'
+  http_method_override: false
+  handle_all_throwables: true
+  assets: ~
+  cache:
+    prefix_seed: smart-diag-backend
+    app: cache.adapter.redis
+    default_redis_provider: '%env(REDIS_URL)%'
+  php_errors:
+    log: true
