@@ -80,6 +80,15 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
 
+    env:
+      APP_ENV: dev
+      APP_SECRET: ci-secret
+      ADMIN_API_KEY: ci-admin-key
+      DATABASE_URL: postgresql://vin:vin@localhost:5432/vin?serverVersion=16&charset=utf8
+      REDIS_URL: redis://localhost:6379
+      JWT_PASSPHRASE: ci-jwt-passphrase
+      AI_GITHUB_TOKEN: ""
+
     steps:
       - uses: actions/checkout@v4
 
@@ -99,6 +108,9 @@ jobs:
 
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Warm up Symfony cache
+        run: php bin/console cache:warmup
 
       - name: PHPStan
         run: vendor/bin/phpstan analyse --memory-limit=512M --no-progress
