@@ -11,6 +11,10 @@ nelmio_api_doc:
         description: Endpoints used to manage client licenses.
     components:
       securitySchemes:
+        BearerAuth:
+          type: http
+          scheme: bearer
+          bearerFormat: JWT
         LicenseKey:
           type: apiKey
           in: header
@@ -97,6 +101,66 @@ nelmio_api_doc:
                 licenseKey:
                   type: string
                   example: lic_0123456789abcdef
+        UserResponse:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            email:
+              type: string
+              format: email
+              example: admin@example.com
+            firstName:
+              type: string
+              example: Jan
+            lastName:
+              type: string
+              example: Kowalski
+            role:
+              type: string
+              enum: [ROLE_ADMIN, ROLE_EMPLOYEE]
+              example: ROLE_ADMIN
+            active:
+              type: boolean
+              example: true
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+            deletedAt:
+              type: string
+              format: date-time
+              nullable: true
+        UserWriteRequest:
+          type: object
+          required: [email, firstName, lastName, role, password]
+          properties:
+            email:
+              type: string
+              format: email
+              example: jan.kowalski@example.com
+            firstName:
+              type: string
+              example: Jan
+            lastName:
+              type: string
+              example: Kowalski
+            role:
+              type: string
+              enum: [ROLE_ADMIN, ROLE_EMPLOYEE]
+              example: ROLE_EMPLOYEE
+            password:
+              type: string
+              format: password
+              minLength: 8
+              example: secret123
+            active:
+              type: boolean
+              nullable: true
+              example: true
         VinCheckDigitResponse:
           type: object
           required: [valid, actual, expected]
@@ -210,6 +274,46 @@ nelmio_api_doc:
               type: object
               additionalProperties: true
               example: []
+    paths:
+      /api/auth/login:
+        post:
+          summary: Log in and receive a JWT token
+          operationId: authLogin
+          tags:
+            - Authentication
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  type: object
+                  required: [email, password]
+                  properties:
+                    email:
+                      type: string
+                      format: email
+                      example: admin@example.com
+                    password:
+                      type: string
+                      format: password
+                      example: secret123
+          responses:
+            '200':
+              description: JWT token issued.
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                        example: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9...
+            '401':
+              description: Invalid credentials.
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/ErrorResponse'
   areas:
     default:
       path_patterns:
