@@ -8,3 +8,6 @@ services:
 
   App\License\Application\LicenseLookup:
     alias: App\License\Infrastructure\LicenseRepository
+
+  App\User\Application\UserLookup:
+    alias: App\User\Infrastructure\UserRepository

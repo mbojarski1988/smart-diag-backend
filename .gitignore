@@ -22,6 +22,7 @@
 /.idea/
 /.vscode/
 *.iml
+/config/reference.php
 
 # OS
 .DS_Store
@@ -44,3 +45,6 @@ GEMINI.md
 COPILOT.md
 .cursorrules
 .cursorignore
+
+# JWT keys
+/config/jwt/
