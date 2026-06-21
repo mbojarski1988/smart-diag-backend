@@ -11,3 +11,7 @@ services:
 
   App\User\Application\UserLookup:
     alias: App\User\Infrastructure\UserRepository
+
+  App\Shared\Ai\Infrastructure\GitHub\GitHubAiClient:
+    arguments:
+      $githubToken: '%env(AI_GITHUB_TOKEN)%'

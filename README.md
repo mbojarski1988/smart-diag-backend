@@ -9,6 +9,7 @@ Backend API for AI-powered diagnostics of Ford vehicles: VIN decoding, fault cod
 - **JWT authentication** — login with email/password, role-based access (`ROLE_ADMIN`, `ROLE_EMPLOYEE`)
 - **User administration** — create, list, update, soft-delete users and reset passwords (admin only)
 - **License management** — issue and manage API license keys (admin only)
+- **AI chat completions** — GitHub AI Models client (`GitHubAiClient`) backed by `models.github.ai`; default model `meta/Meta-Llama-3.1-405B-Instruct`
 
 ## Running
 
@@ -100,6 +101,7 @@ make check     # test + analyse + cs
 | `REDIS_URL` | `redis://redis:6379` | Redis cache |
 | `ADMIN_API_KEY` | `change-me-admin-key` | License admin endpoints |
 | `JWT_PASSPHRASE` | `change-me-jwt-passphrase` | JWT key passphrase |
+| `AI_GITHUB_TOKEN` | *(required)* | GitHub AI Models API token |
 
 ## Project Structure
 
@@ -121,6 +123,8 @@ src/
   Shared/Auth/
     Attribute/             — #[RequiresAuth], #[RequiresRole], …
     EventListener/         — JWT success / authorization listeners
+  Shared/Ai/
+    Infrastructure/GitHub/ — GitHubAiClient, GitHubAiMessage, GitHubAiResponse
 tests/
 ```
 
