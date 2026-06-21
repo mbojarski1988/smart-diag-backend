@@ -14,4 +14,4 @@ services:
 
   App\Shared\Ai\Infrastructure\GitHub\GitHubAiClient:
     arguments:
-      $githubToken: '%env(GITHUB_TOKEN)%'
+      $githubToken: '%env(AI_GITHUB_TOKEN)%'
