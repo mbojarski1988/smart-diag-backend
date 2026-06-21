@@ -10,12 +10,14 @@ use App\User\Application\UserLookup;
 use App\User\Application\UserManager;
 use App\User\Domain\User;
 use Doctrine\ORM\EntityManagerInterface;
+use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/api/admin/users')]
 #[RequiresRole('ROLE_ADMIN')]
+#[OA\Tag(name: 'User administration')]
 final class UserAdminController
 {
     public function __construct(
@@ -26,6 +28,31 @@ final class UserAdminController
     }
 
     #[Route('', name: 'api_admin_users_list', methods: ['GET'])]
+    #[OA\Get(
+        path: '/api/admin/users',
+        operationId: 'adminUsersList',
+        summary: 'List all users',
+        security: [['BearerAuth' => []]],
+        tags: ['User administration'],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'List of users.',
+                content: new OA\JsonContent(
+                    type: 'object',
+                    properties: [
+                        new OA\Property(
+                            property: 'items',
+                            type: 'array',
+                            items: new OA\Items(ref: '#/components/schemas/UserResponse'),
+                        ),
+                    ],
+                ),
+            ),
+            new OA\Response(response: 401, description: 'Unauthorized.', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+            new OA\Response(response: 403, description: 'Forbidden — requires ROLE_ADMIN.', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+        ],
+    )]
     public function list(): JsonResponse
     {
         return new JsonResponse([
@@ -37,6 +64,23 @@ final class UserAdminController
     }
 
     #[Route('', name: 'api_admin_users_create', methods: ['POST'])]
+    #[OA\Post(
+        path: '/api/admin/users',
+        operationId: 'adminUsersCreate',
+        summary: 'Create a new user',
+        security: [['BearerAuth' => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(ref: '#/components/schemas/UserWriteRequest'),
+        ),
+        tags: ['User administration'],
+        responses: [
+            new OA\Response(response: 201, description: 'User created.', content: new OA\JsonContent(ref: '#/components/schemas/UserResponse')),
+            new OA\Response(response: 401, description: 'Unauthorized.', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+            new OA\Response(response: 403, description: 'Forbidden — requires ROLE_ADMIN.', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+            new OA\Response(response: 422, description: 'Validation error.', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+        ],
+    )]
     public function create(Request $request): JsonResponse
     {
         $dto = UserWriteRequest::fromRequest($request);
@@ -58,6 +102,22 @@ final class UserAdminController
     }
 
     #[Route('/{id}', name: 'api_admin_users_show', requirements: ['id' => '\d+'], methods: ['GET'])]
+    #[OA\Get(
+        path: '/api/admin/users/{id}',
+        operationId: 'adminUsersShow',
+        summary: 'Get a single user',
+        security: [['BearerAuth' => []]],
+        tags: ['User administration'],
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer', example: 1)),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'User data.', content: new OA\JsonContent(ref: '#/components/schemas/UserResponse')),
+            new OA\Response(response: 401, description: 'Unauthorized.', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+            new OA\Response(response: 403, description: 'Forbidden — requires ROLE_ADMIN.', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+            new OA\Response(response: 404, description: 'User not found.', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+        ],
+    )]
     public function show(int $id): JsonResponse
     {
         $user = $this->users->findById($id);
@@ -70,6 +130,27 @@ final class UserAdminController
     }
 
     #[Route('/{id}', name: 'api_admin_users_update', requirements: ['id' => '\d+'], methods: ['PATCH'])]
+    #[OA\Patch(
+        path: '/api/admin/users/{id}',
+        operationId: 'adminUsersUpdate',
+        summary: 'Update a user',
+        security: [['BearerAuth' => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(ref: '#/components/schemas/UserWriteRequest'),
+        ),
+        tags: ['User administration'],
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer', example: 1)),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Updated user data.', content: new OA\JsonContent(ref: '#/components/schemas/UserResponse')),
+            new OA\Response(response: 401, description: 'Unauthorized.', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+            new OA\Response(response: 403, description: 'Forbidden — requires ROLE_ADMIN.', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+            new OA\Response(response: 404, description: 'User not found.', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+            new OA\Response(response: 422, description: 'Validation error.', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+        ],
+    )]
     public function update(int $id, Request $request): JsonResponse
     {
         $user = $this->users->findById($id);
@@ -95,6 +176,33 @@ final class UserAdminController
         name: 'api_admin_users_reset_password',
         requirements: ['id' => '\d+'],
         methods: ['POST'],
+    )]
+    #[OA\Post(
+        path: '/api/admin/users/{id}/reset-password',
+        operationId: 'adminUsersResetPassword',
+        summary: 'Reset a user\'s password',
+        security: [['BearerAuth' => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['password'],
+                properties: [
+                    new OA\Property(property: 'password', type: 'string', format: 'password', minLength: 8, example: 'newSecret123'),
+                ],
+                type: 'object',
+            ),
+        ),
+        tags: ['User administration'],
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer', example: 1)),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Password changed, updated user data.', content: new OA\JsonContent(ref: '#/components/schemas/UserResponse')),
+            new OA\Response(response: 401, description: 'Unauthorized.', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+            new OA\Response(response: 403, description: 'Forbidden — requires ROLE_ADMIN.', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+            new OA\Response(response: 404, description: 'User not found.', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+            new OA\Response(response: 422, description: 'Validation error.', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+        ],
     )]
     public function resetPassword(int $id, Request $request): JsonResponse
     {
@@ -125,6 +233,22 @@ final class UserAdminController
     }
 
     #[Route('/{id}', name: 'api_admin_users_delete', requirements: ['id' => '\d+'], methods: ['DELETE'])]
+    #[OA\Delete(
+        path: '/api/admin/users/{id}',
+        operationId: 'adminUsersDelete',
+        summary: 'Soft-delete a user',
+        security: [['BearerAuth' => []]],
+        tags: ['User administration'],
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer', example: 1)),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Deleted user data.', content: new OA\JsonContent(ref: '#/components/schemas/UserResponse')),
+            new OA\Response(response: 401, description: 'Unauthorized.', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+            new OA\Response(response: 403, description: 'Forbidden — requires ROLE_ADMIN.', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+            new OA\Response(response: 404, description: 'User not found.', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+        ],
+    )]
     public function delete(int $id): JsonResponse
     {
         $user = $this->users->findById($id);
