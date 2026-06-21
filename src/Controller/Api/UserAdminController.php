@@ -49,8 +49,16 @@ final class UserAdminController
                     ],
                 ),
             ),
-            new OA\Response(response: 401, description: 'Unauthorized.', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
-            new OA\Response(response: 403, description: 'Forbidden — requires ROLE_ADMIN.', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+            new OA\Response(
+                response: 401,
+                description: 'Unauthorized.',
+                content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse'),
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Forbidden — requires ROLE_ADMIN.',
+                content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse'),
+            ),
         ],
     )]
     public function list(): JsonResponse
@@ -75,10 +83,26 @@ final class UserAdminController
         ),
         tags: ['User administration'],
         responses: [
-            new OA\Response(response: 201, description: 'User created.', content: new OA\JsonContent(ref: '#/components/schemas/UserResponse')),
-            new OA\Response(response: 401, description: 'Unauthorized.', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
-            new OA\Response(response: 403, description: 'Forbidden — requires ROLE_ADMIN.', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
-            new OA\Response(response: 422, description: 'Validation error.', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+            new OA\Response(
+                response: 201,
+                description: 'User created.',
+                content: new OA\JsonContent(ref: '#/components/schemas/UserResponse'),
+            ),
+            new OA\Response(
+                response: 401,
+                description: 'Unauthorized.',
+                content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse'),
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Forbidden — requires ROLE_ADMIN.',
+                content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse'),
+            ),
+            new OA\Response(
+                response: 422,
+                description: 'Validation error.',
+                content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse'),
+            ),
         ],
     )]
     public function create(Request $request): JsonResponse
@@ -109,13 +133,34 @@ final class UserAdminController
         security: [['BearerAuth' => []]],
         tags: ['User administration'],
         parameters: [
-            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer', example: 1)),
+            new OA\Parameter(
+                name: 'id',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer', example: 1),
+            ),
         ],
         responses: [
-            new OA\Response(response: 200, description: 'User data.', content: new OA\JsonContent(ref: '#/components/schemas/UserResponse')),
-            new OA\Response(response: 401, description: 'Unauthorized.', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
-            new OA\Response(response: 403, description: 'Forbidden — requires ROLE_ADMIN.', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
-            new OA\Response(response: 404, description: 'User not found.', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+            new OA\Response(
+                response: 200,
+                description: 'User data.',
+                content: new OA\JsonContent(ref: '#/components/schemas/UserResponse'),
+            ),
+            new OA\Response(
+                response: 401,
+                description: 'Unauthorized.',
+                content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse'),
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Forbidden — requires ROLE_ADMIN.',
+                content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse'),
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'User not found.',
+                content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse'),
+            ),
         ],
     )]
     public function show(int $id): JsonResponse
@@ -141,14 +186,39 @@ final class UserAdminController
         ),
         tags: ['User administration'],
         parameters: [
-            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer', example: 1)),
+            new OA\Parameter(
+                name: 'id',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer', example: 1),
+            ),
         ],
         responses: [
-            new OA\Response(response: 200, description: 'Updated user data.', content: new OA\JsonContent(ref: '#/components/schemas/UserResponse')),
-            new OA\Response(response: 401, description: 'Unauthorized.', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
-            new OA\Response(response: 403, description: 'Forbidden — requires ROLE_ADMIN.', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
-            new OA\Response(response: 404, description: 'User not found.', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
-            new OA\Response(response: 422, description: 'Validation error.', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+            new OA\Response(
+                response: 200,
+                description: 'Updated user data.',
+                content: new OA\JsonContent(ref: '#/components/schemas/UserResponse'),
+            ),
+            new OA\Response(
+                response: 401,
+                description: 'Unauthorized.',
+                content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse'),
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Forbidden — requires ROLE_ADMIN.',
+                content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse'),
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'User not found.',
+                content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse'),
+            ),
+            new OA\Response(
+                response: 422,
+                description: 'Validation error.',
+                content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse'),
+            ),
         ],
     )]
     public function update(int $id, Request $request): JsonResponse
@@ -187,21 +257,52 @@ final class UserAdminController
             content: new OA\JsonContent(
                 required: ['password'],
                 properties: [
-                    new OA\Property(property: 'password', type: 'string', format: 'password', minLength: 8, example: 'newSecret123'),
+                    new OA\Property(
+                        property: 'password',
+                        type: 'string',
+                        format: 'password',
+                        minLength: 8,
+                        example: 'newSecret123',
+                    ),
                 ],
                 type: 'object',
             ),
         ),
         tags: ['User administration'],
         parameters: [
-            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer', example: 1)),
+            new OA\Parameter(
+                name: 'id',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer', example: 1),
+            ),
         ],
         responses: [
-            new OA\Response(response: 200, description: 'Password changed, updated user data.', content: new OA\JsonContent(ref: '#/components/schemas/UserResponse')),
-            new OA\Response(response: 401, description: 'Unauthorized.', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
-            new OA\Response(response: 403, description: 'Forbidden — requires ROLE_ADMIN.', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
-            new OA\Response(response: 404, description: 'User not found.', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
-            new OA\Response(response: 422, description: 'Validation error.', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+            new OA\Response(
+                response: 200,
+                description: 'Password changed, updated user data.',
+                content: new OA\JsonContent(ref: '#/components/schemas/UserResponse'),
+            ),
+            new OA\Response(
+                response: 401,
+                description: 'Unauthorized.',
+                content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse'),
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Forbidden — requires ROLE_ADMIN.',
+                content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse'),
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'User not found.',
+                content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse'),
+            ),
+            new OA\Response(
+                response: 422,
+                description: 'Validation error.',
+                content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse'),
+            ),
         ],
     )]
     public function resetPassword(int $id, Request $request): JsonResponse
@@ -240,13 +341,34 @@ final class UserAdminController
         security: [['BearerAuth' => []]],
         tags: ['User administration'],
         parameters: [
-            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer', example: 1)),
+            new OA\Parameter(
+                name: 'id',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer', example: 1),
+            ),
         ],
         responses: [
-            new OA\Response(response: 200, description: 'Deleted user data.', content: new OA\JsonContent(ref: '#/components/schemas/UserResponse')),
-            new OA\Response(response: 401, description: 'Unauthorized.', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
-            new OA\Response(response: 403, description: 'Forbidden — requires ROLE_ADMIN.', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
-            new OA\Response(response: 404, description: 'User not found.', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+            new OA\Response(
+                response: 200,
+                description: 'Deleted user data.',
+                content: new OA\JsonContent(ref: '#/components/schemas/UserResponse'),
+            ),
+            new OA\Response(
+                response: 401,
+                description: 'Unauthorized.',
+                content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse'),
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Forbidden — requires ROLE_ADMIN.',
+                content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse'),
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'User not found.',
+                content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse'),
+            ),
         ],
     )]
     public function delete(int $id): JsonResponse
