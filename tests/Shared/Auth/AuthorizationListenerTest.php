@@ -7,11 +7,15 @@ namespace App\Tests\Shared\Auth;
 use App\License\Application\LicenseValidator;
 use App\License\Domain\License;
 use App\Shared\Auth\Attribute\RequiresAdmin;
+use App\Shared\Auth\Attribute\RequiresAuth;
 use App\Shared\Auth\Attribute\RequiresLicense;
+use App\Shared\Auth\Attribute\RequiresRole;
 use App\Shared\Auth\EventListener\AuthorizationListener;
 use App\Tests\License\Application\InMemoryLicenseLookup;
+use App\User\Domain\User;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
@@ -109,11 +113,71 @@ final class AuthorizationListenerTest extends TestCase
         self::assertSame($originalController, $event->getController());
     }
 
-    private function listener(?InMemoryLicenseLookup $lookup = null): AuthorizationListener
+    public function testItAllowsRequestWithRequiresAuthWhenUserLoggedIn(): void
     {
+        $user = new User('jan@example.com', 'Jan', 'Kowalski', 'ROLE_EMPLOYEE');
+        $security = $this->createMock(Security::class);
+        $security->method('getUser')->willReturn($user);
+
+        $event = $this->makeEvent($this->controllerWith(RequiresAuth::class));
+        $originalController = $event->getController();
+
+        $this->listener(security: $security)->onKernelController($event);
+
+        self::assertSame($originalController, $event->getController());
+    }
+
+    public function testItBlocksRequiresAuthWhenNoUser(): void
+    {
+        $security = $this->createMock(Security::class);
+        $security->method('getUser')->willReturn(null);
+
+        $event = $this->makeEvent($this->controllerWith(RequiresAuth::class));
+
+        $this->listener(security: $security)->onKernelController($event);
+
+        $response = ($event->getController())();
+        self::assertInstanceOf(JsonResponse::class, $response);
+        self::assertSame(401, $response->getStatusCode());
+    }
+
+    public function testItAllowsRequiresRoleWhenUserHasRole(): void
+    {
+        $user = new User('jan@example.com', 'Jan', 'Kowalski', 'ROLE_ADMIN');
+        $security = $this->createMock(Security::class);
+        $security->method('getUser')->willReturn($user);
+
+        $event = $this->makeEvent($this->controllerWith(RequiresRole::class));
+        $originalController = $event->getController();
+
+        $this->listener(security: $security)->onKernelController($event);
+
+        self::assertSame($originalController, $event->getController());
+    }
+
+    public function testItBlocksRequiresRoleWhenUserLacksRole(): void
+    {
+        $user = new User('jan@example.com', 'Jan', 'Kowalski', 'ROLE_EMPLOYEE');
+        $security = $this->createMock(Security::class);
+        $security->method('getUser')->willReturn($user);
+
+        $event = $this->makeEvent($this->controllerWith(RequiresRole::class));
+
+        $this->listener(security: $security)->onKernelController($event);
+
+        $response = ($event->getController())();
+        self::assertInstanceOf(JsonResponse::class, $response);
+        self::assertSame(403, $response->getStatusCode());
+    }
+
+    private function listener(
+        ?InMemoryLicenseLookup $lookup = null,
+        ?Security $security = null,
+    ): AuthorizationListener {
         return new AuthorizationListener(
             new LicenseValidator($lookup ?? new InMemoryLicenseLookup()),
             self::ADMIN_KEY,
+            $security ?? $this->createMock(Security::class),
         );
     }
 
@@ -159,6 +223,20 @@ final class AuthorizationListenerTest extends TestCase
             },
             RequiresAdmin::class => new class {
                 #[RequiresAdmin]
+                public function __invoke(): JsonResponse
+                {
+                    return new JsonResponse(['ok' => true]);
+                }
+            },
+            RequiresAuth::class => new class {
+                #[RequiresAuth]
+                public function __invoke(): JsonResponse
+                {
+                    return new JsonResponse(['ok' => true]);
+                }
+            },
+            RequiresRole::class => new class {
+                #[RequiresRole('ROLE_ADMIN')]
                 public function __invoke(): JsonResponse
                 {
                     return new JsonResponse(['ok' => true]);
