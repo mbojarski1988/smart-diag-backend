@@ -9,6 +9,8 @@ nelmio_api_doc:
         description: Endpoints used by API clients.
       - name: License administration
         description: Endpoints used to manage client licenses.
+      - name: AI prompt administration
+        description: Endpoints used by administrators to manage AI prompts.
     components:
       securitySchemes:
         BearerAuth:
@@ -161,6 +163,28 @@ nelmio_api_doc:
               type: boolean
               nullable: true
               example: true
+        AiPrompt:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            name:
+              type: string
+              example: VIN analysis
+            prompt:
+              type: string
+              example: Analyze the provided VIN and return diagnostic guidance.
+        AiPromptWriteRequest:
+          type: object
+          required: [name, prompt]
+          properties:
+            name:
+              type: string
+              example: VIN analysis
+            prompt:
+              type: string
+              example: Analyze the provided VIN and return diagnostic guidance.
         VinCheckDigitResponse:
           type: object
           required: [valid, actual, expected]
