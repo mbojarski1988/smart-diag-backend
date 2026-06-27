@@ -9,6 +9,8 @@ Backend API for AI-powered diagnostics of Ford vehicles: VIN decoding, fault cod
 - **JWT authentication** — login with email/password, role-based access (`ROLE_ADMIN`, `ROLE_EMPLOYEE`)
 - **User administration** — create, list, update, soft-delete users and reset passwords (admin only)
 - **License management** — issue and manage API license keys (admin only)
+- **Known PID management** — per-model OBD-II PID catalogue (name, unit, description, active flag); admin CRUD + license-key read endpoint
+- **AI prompt management** — named prompt templates stored in the database; admin CRUD (create, read, update, delete)
 - **AI chat completions** — GitHub AI Models client (`GitHubAiClient`) backed by `models.github.ai`; default model `meta/Meta-Llama-3.1-405B-Instruct`
 
 ## Running
@@ -39,6 +41,16 @@ The API is available at `http://localhost:8000`.
 | `GET` | `/api/admin/licenses/{id}` | Admin key | Get a license |
 | `PATCH` | `/api/admin/licenses/{id}` | Admin key | Update a license |
 | `DELETE` | `/api/admin/licenses/{id}` | Admin key | Delete a license |
+| `GET` | `/api/known-pids/{model}` | License key | List known PIDs for a model |
+| `GET` | `/api/admin/known-pids` | JWT + ROLE_ADMIN | List known PIDs (admin) |
+| `POST` | `/api/admin/known-pids` | JWT + ROLE_ADMIN | Create a known PID |
+| `PATCH` | `/api/admin/known-pids/{id}` | JWT + ROLE_ADMIN | Update a known PID |
+| `DELETE` | `/api/admin/known-pids/{id}` | JWT + ROLE_ADMIN | Delete a known PID |
+| `GET` | `/api/admin/ai-prompts` | JWT + ROLE_ADMIN | List AI prompts |
+| `POST` | `/api/admin/ai-prompts` | JWT + ROLE_ADMIN | Create an AI prompt |
+| `GET` | `/api/admin/ai-prompts/{id}` | JWT + ROLE_ADMIN | Get an AI prompt |
+| `PATCH` | `/api/admin/ai-prompts/{id}` | JWT + ROLE_ADMIN | Update an AI prompt |
+| `DELETE` | `/api/admin/ai-prompts/{id}` | JWT + ROLE_ADMIN | Delete an AI prompt |
 
 Full interactive documentation (Swagger UI): `http://localhost:8000/docs`
 OpenAPI spec: `http://localhost:8000/docs/openapi.json`
@@ -124,7 +136,13 @@ src/
     Attribute/             — #[RequiresAuth], #[RequiresRole], …
     EventListener/         — JWT success / authorization listeners
   Shared/Ai/
+    Domain/                — AiPrompt entity
+    Application/           — prompt DTOs
     Infrastructure/GitHub/ — GitHubAiClient, GitHubAiMessage, GitHubAiResponse
+  Pid/
+    Domain/                — KnownPid entity
+    Application/           — KnownPidWriteRequest DTO
+    Infrastructure/        — KnownPidRepository
 tests/
 ```
 
