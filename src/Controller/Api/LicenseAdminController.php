@@ -8,7 +8,7 @@ use App\License\Application\Dto\LicenseWriteRequest;
 use App\License\Application\LicenseKeyGenerator;
 use App\License\Domain\License;
 use App\License\Infrastructure\LicenseRepository;
-use App\Shared\Auth\Attribute\RequiresAdmin;
+use App\Shared\Auth\Attribute\RequiresRole;
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/api/admin/licenses')]
-#[RequiresAdmin]
+#[RequiresRole('ROLE_ADMIN')]
 final class LicenseAdminController extends AbstractController
 {
     /**
@@ -28,7 +28,7 @@ final class LicenseAdminController extends AbstractController
         path: '/api/admin/licenses',
         operationId: 'createLicense',
         summary: 'Create a license',
-        security: [['AdminKey' => []]],
+        security: [['BearerAuth' => []]],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(ref: '#/components/schemas/LicenseWrite'),
@@ -47,7 +47,7 @@ final class LicenseAdminController extends AbstractController
             ),
             new OA\Response(
                 response: 401,
-                description: 'Invalid admin key.',
+                description: 'Unauthorized.',
                 content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse'),
             ),
         ],
@@ -82,7 +82,7 @@ final class LicenseAdminController extends AbstractController
         path: '/api/admin/licenses',
         operationId: 'listLicenses',
         summary: 'List licenses',
-        security: [['AdminKey' => []]],
+        security: [['BearerAuth' => []]],
         tags: ['License administration'],
         responses: [
             new OA\Response(
@@ -101,7 +101,7 @@ final class LicenseAdminController extends AbstractController
             ),
             new OA\Response(
                 response: 401,
-                description: 'Invalid admin key.',
+                description: 'Unauthorized.',
                 content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse'),
             ),
         ],
@@ -122,7 +122,7 @@ final class LicenseAdminController extends AbstractController
         operationId: 'getLicense',
         tags: ['License administration'],
         summary: 'Get a license',
-        security: [['AdminKey' => []]],
+        security: [['BearerAuth' => []]],
         parameters: [
             new OA\Parameter(
                 name: 'id',
@@ -139,7 +139,7 @@ final class LicenseAdminController extends AbstractController
             ),
             new OA\Response(
                 response: 401,
-                description: 'Invalid admin key.',
+                description: 'Unauthorized.',
                 content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse'),
             ),
             new OA\Response(
@@ -166,7 +166,7 @@ final class LicenseAdminController extends AbstractController
         operationId: 'updateLicense',
         tags: ['License administration'],
         summary: 'Update a license',
-        security: [['AdminKey' => []]],
+        security: [['BearerAuth' => []]],
         parameters: [
             new OA\Parameter(
                 name: 'id',
@@ -192,7 +192,7 @@ final class LicenseAdminController extends AbstractController
             ),
             new OA\Response(
                 response: 401,
-                description: 'Invalid admin key.',
+                description: 'Unauthorized.',
                 content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse'),
             ),
             new OA\Response(
@@ -244,7 +244,7 @@ final class LicenseAdminController extends AbstractController
         operationId: 'deactivateLicense',
         tags: ['License administration'],
         summary: 'Deactivate a license',
-        security: [['AdminKey' => []]],
+        security: [['BearerAuth' => []]],
         parameters: [
             new OA\Parameter(
                 name: 'id',
@@ -261,7 +261,7 @@ final class LicenseAdminController extends AbstractController
             ),
             new OA\Response(
                 response: 401,
-                description: 'Invalid admin key.',
+                description: 'Unauthorized.',
                 content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse'),
             ),
             new OA\Response(
@@ -294,7 +294,7 @@ final class LicenseAdminController extends AbstractController
         operationId: 'deleteLicense',
         tags: ['License administration'],
         summary: 'Soft delete a license',
-        security: [['AdminKey' => []]],
+        security: [['BearerAuth' => []]],
         parameters: [
             new OA\Parameter(
                 name: 'id',
@@ -311,7 +311,7 @@ final class LicenseAdminController extends AbstractController
             ),
             new OA\Response(
                 response: 401,
-                description: 'Invalid admin key.',
+                description: 'Unauthorized.',
                 content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse'),
             ),
             new OA\Response(
