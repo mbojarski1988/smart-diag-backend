@@ -21,10 +21,6 @@ nelmio_api_doc:
           type: apiKey
           in: header
           name: X-License-Key
-        AdminKey:
-          type: apiKey
-          in: header
-          name: X-Admin-Key
       schemas:
         ErrorResponse:
           type: object
