@@ -181,6 +181,56 @@ nelmio_api_doc:
             prompt:
               type: string
               example: Analyze the provided VIN and return diagnostic guidance.
+        KnownPid:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            model:
+              type: string
+              example: Focus MK3
+            pid:
+              type: string
+              example: 22F40D
+            name:
+              type: string
+              example: Oil temperature
+            unit:
+              type: string
+              nullable: true
+              example: °C
+            description:
+              type: string
+              nullable: true
+              example: Engine oil temperature from PCM extended PID.
+            active:
+              type: boolean
+              example: true
+        KnownPidWriteRequest:
+          type: object
+          required: [model, pid, name]
+          properties:
+            model:
+              type: string
+              example: Focus MK3
+            pid:
+              type: string
+              example: 22F40D
+            name:
+              type: string
+              example: Oil temperature
+            unit:
+              type: string
+              nullable: true
+              example: °C
+            description:
+              type: string
+              nullable: true
+              example: Engine oil temperature from PCM extended PID.
+            active:
+              type: boolean
+              example: true
         VinCheckDigitResponse:
           type: object
           required: [valid, actual, expected]
